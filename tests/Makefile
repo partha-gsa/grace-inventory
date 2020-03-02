@@ -36,9 +36,9 @@
 #	terrascan --location . --tests all
 
 
-default: integration-test
+default: integration_test
 
-integration-test: lint
+integration_test: lint
 	go test -v integration_test.go
 
 lint: dependencies
