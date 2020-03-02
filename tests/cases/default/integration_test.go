@@ -1,14 +1,9 @@
 package testing
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
-
-	cwe "github.com/GSA/grace-tftest/aws/cloudwatchevents"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -40,9 +35,10 @@ func TestAll(t *testing.T) {
 		t.Fatalf("failed to connect to moto: %s -> %v", url, err)
 	}
 
-    keyID, keyArn := testKmsKey(t, sess)
+	keyID, keyArn := testKmsKey(t, sess)
 	roleArn := testRole(t, sess, keyArn)
 	ruleArn := testCWERule(t, sess)
+	regions := ""
 	lambdaArn := testLambda(t, sess, roleArn, ruleArn, keyArn, keyID, regions)
 	testCWETarget(t, sess, lambdaArn)
 	testBucket(t, sess, keyArn)
@@ -54,9 +50,9 @@ func testLambda(t *testing.T, cfg client.ConfigProvider, roleArn string,
 	defer log.Println("exited testLambda")
 
 	var (
-		functionName = app.FullName()
+		functionName = "grace-inventory-integration"
 		handlerName  = "grace-inventory-lambda"
-		bucketName   = app.FullName()
+		bucketName   = "grace-inventory-integration"
 	)
 	svc := lambda.New(cfg, functionName)
 
@@ -145,7 +141,7 @@ func testRole(t *testing.T, cfg client.ConfigProvider, keyArn string) string {
 	).Assert(t)
 
 	stmt.Action("sts:AssumeRole").Effect("Allow").
-		Resource(roleArn, masterRole, tenantRole).Assert(t)
+		Resource(roleArn, "role", "tenant-role").Assert(t)
 
 	stmt.Effect("Allow").Action("s3:GetObject", "s3:PutObject").
 		Resource("arn:aws:s3:::" + bucketName + "/*").Assert(t)
