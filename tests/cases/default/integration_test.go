@@ -32,6 +32,9 @@ func TestAll(t *testing.T) {
 		Vars: map[string]interface{}{
 			"source_file": path,
 		},
+		EnvVars: map[string]string{
+			"TF_LOG": "TRACE",
+		},
 	}
 	t.Logf("output: %s\n", terraform.InitAndApply(t, opts))
 
