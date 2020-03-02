@@ -36,6 +36,37 @@ jobs:
       - run:
           name: Lint Handler
           command: make lint_handler
+  integration_test:
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      TF_LOG: DEBUG
+    docker:
+      - image: circleci/golang:latest
+    steps:
+      - checkout
+      - run:
+          name: Install make, curl, unzip
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y make curl unzip
+      - run:
+          name: Install Terraform
+          command: |
+            TERRAFORM_LATEST_URL=$(curl --silent --location --head --output /dev/null --write-out '%{url_effective}' -- https://github.com/hashicorp/terraform/releases/latest)
+            TERRAFORM_VERSION=${TERRAFORM_LATEST_URL##*/}
+            TERRAFORM_VERSION=${TERRAFORM_VERSION:1:${#TERRAFORM_VERSION}}
+            curl -o terraform.zip -sSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+            sudo unzip terraform.zip -d /bin
+            sudo chmod +x /bin/terraform
+      - run:
+          name: Install Moto Server
+          command: |
+            sudo apt-get install -y python3-dev gcc python3-pip
+            sudo pip3 install --upgrade pip setuptools flask "moto[server]"
+      - run:
+          name: Test Terraform
+          command: |
+            make integration-test
   test_handler:
     docker:
       - image: circleci/golang:latest
@@ -77,6 +108,7 @@ workflows:
       - tfsec
       - lint_handler
       - test_handler
+      - integration_test
       - release_handler:
           filters:
             tags:
