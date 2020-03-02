@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -23,6 +24,9 @@ import (
 func TestAll(t *testing.T) {
 	opts := &terraform.Options{
 		NoColor: true,
+		Vars: map[string]interface{}{
+			"source_file": filepath.Abs("../../../release/grace-inventory-lambda.zip"),
+		},
 	}
 	t.Logf("output: %s\n", terraform.InitAndApply(t, opts))
 
