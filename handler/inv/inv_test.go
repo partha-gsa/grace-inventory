@@ -97,7 +97,7 @@ func TestNew(t *testing.T) {
 		expected    Inv
 		expectedErr string
 	}{
-		"environment variables not set": {
+		"environment variables.tf not set": {
 			expectedErr: `required environment variable "s3_bucket" is not set`,
 		},
 		"no credentials": {
@@ -116,10 +116,10 @@ func TestNew(t *testing.T) {
 			},
 		},
 	}
-	// Remove test cases that would fail during integration testing because environment variables are set
+	// Remove test cases that would fail during integration testing because environment variables.tf are set
 	if os.Getenv("s3_bucket") != "" {
-		t.Log("deleting test case for environment variables not set")
-		delete(tt, "environment variables not set")
+		t.Log("deleting test case for environment variables.tf not set")
+		delete(tt, "environment variables.tf not set")
 	}
 	if os.Getenv("AWS_ACCESS_KEY_ID") != "" {
 		t.Log("deleting test case for no credentials")
