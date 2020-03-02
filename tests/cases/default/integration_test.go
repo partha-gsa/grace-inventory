@@ -22,10 +22,15 @@ import (
 )
 
 func TestAll(t *testing.T) {
+	path, err := filepath.Abs("../../../release/grace-inventory-lambda.zip")
+	if err != nil {
+		t.Fatalf("unable to resolve path: %v\n", err)
+	}
+
 	opts := &terraform.Options{
 		NoColor: true,
 		Vars: map[string]interface{}{
-			"source_file": filepath.Abs("../../../release/grace-inventory-lambda.zip"),
+			"source_file": path,
 		},
 	}
 	t.Logf("output: %s\n", terraform.InitAndApply(t, opts))

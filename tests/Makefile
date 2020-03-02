@@ -18,5 +18,5 @@ go.mod:
 	go mod init
 
 init:
-	[[ -d ../release ]] || mkdir ../release
-	[[ -e ../release/grace-inventory-lambda.zip ]] || touch ../release/grace-inventory-lambda.zip
+	mkdir -p ../release
+	touch ../release/grace-inventory-lambda.zip
