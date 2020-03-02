@@ -22,6 +22,12 @@ func TestNow(t *testing.T) {
 		t.Fatalf("failed to set AWS_SECRET_ACCESS_KEY: %v", err)
 	}
 
+	err = os.Setenv("TF_LOG", "TRACE")
+	if err != nil {
+		t.Fatalf("failed to set terraform debug: %v", err)
+	}
+
+
 	cwd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("failed to get current working directory: %v", cwd)
